@@ -3,6 +3,8 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/InputComponent.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -22,6 +24,30 @@ void UGrabber::BeginPlay()
 
 	UE_LOG( LogTemp, Warning, TEXT( "Grabber is here!!!" ) );
 	// ...
+
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	if( PhysicsHandle )
+	{
+
+	}
+	else
+	{
+		UE_LOG( LogTemp, Error, TEXT( "Can't find PhysicsHandleComponent. Owner name %s " ) , *GetOwner()->GetName() );
+	}
+
+
+
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	if( InputComponent )
+	{
+
+	}
+	else
+	{
+		UE_LOG( LogTemp, Error, TEXT( "Can't find UInputComponent. Owner name %s " ), *GetOwner()->GetName() );
+	}
 	
 }
 
@@ -46,8 +72,11 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FHitResult HitResult;
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery( ECollisionChannel::ECC_PhysicsBody );
+	
+	FCollisionQueryParams CollisionQueryParams(false);
+
 	bool Result = GetWorld()->LineTraceSingleByObjectType( HitResult,
-		PlayerViewPointLocation, LineTraceEnd, ObjectQueryParams );
+		PlayerViewPointLocation, LineTraceEnd, ObjectQueryParams, CollisionQueryParams );
 	if( Result )
 	{
 		UE_LOG( LogTemp, Warning, TEXT( "Hitted with %s" ), *HitResult.GetActor()->GetName() );

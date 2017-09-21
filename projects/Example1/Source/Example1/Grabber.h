@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Grabber.generated.h"
 
+class UPhysicsHandleComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EXAMPLE1_API UGrabber : public UActorComponent
@@ -28,5 +29,6 @@ private:
 	UPROPERTY( EditAnywhere )
 		float Reach = 100.f;
 		
-	
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
 };
