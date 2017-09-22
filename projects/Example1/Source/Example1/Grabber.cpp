@@ -22,64 +22,103 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG( LogTemp, Warning, TEXT( "Grabber is here!!!" ) );
-	// ...
-
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-
-	if( PhysicsHandle )
-	{
-
-	}
-	else
-	{
-		UE_LOG( LogTemp, Error, TEXT( "Can't find PhysicsHandleComponent. Owner name %s " ) , *GetOwner()->GetName() );
-	}
-
-
-
-	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
-
-	if( InputComponent )
-	{
-
-	}
-	else
-	{
-		UE_LOG( LogTemp, Error, TEXT( "Can't find UInputComponent. Owner name %s " ), *GetOwner()->GetName() );
-	}
+    FindPhysicsHandleComponent();
+    SetupInputComponent();
 	
 }
 
+void UGrabber::SetupInputComponent()
+{
+    InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+    
+    if( InputComponent )
+    {
+        InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+        InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+    }
+    else
+    {
+        UE_LOG( LogTemp, Error, TEXT( "Can't find UInputComponent. Owner name %s " ), *GetOwner()->GetName() );
+    }
+}
+
+void UGrabber::FindPhysicsHandleComponent()
+{
+    PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+    
+    if( PhysicsHandle )
+    {
+        
+    }
+    else
+    {
+        UE_LOG( LogTemp, Error, TEXT( "Can't find PhysicsHandleComponent. Owner name %s " ) , *GetOwner()->GetName() );
+    }
+}
+
+void UGrabber::Grab()
+{
+    auto HitResult = GetFirstPhysicsBodyInReach();
+    auto ComponentToGrab = HitResult.GetComponent();
+    
+    auto ActorHit = HitResult.GetActor();
+    if(ActorHit)
+    {
+        PhysicsHandle->GrabComponent(
+            ComponentToGrab,
+            FName(TEXT("")),
+            ComponentToGrab->GetOwner()->GetActorLocation(),
+            true
+        );
+    }
+    UE_LOG( LogTemp, Warning, TEXT( "Grab pressed" ));
+}
+
+void UGrabber::Release()
+{
+    PhysicsHandle->ReleaseComponent();
+    UE_LOG( LogTemp, Warning, TEXT( "Grab released" ));
+}
+
+const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
+{
+    FVector PlayerViewPointLocation;
+    FRotator PlayerViewPointRotation;
+    
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+    
+    FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+    FHitResult HitResult;
+    FCollisionObjectQueryParams ObjectQueryParams;
+    ObjectQueryParams.AddObjectTypesToQuery( ECollisionChannel::ECC_PhysicsBody );
+    
+    FCollisionQueryParams CollisionQueryParams(FName(TEXT("TraceTag")), false, GetOwner());
+    
+    bool Result = GetWorld()->LineTraceSingleByObjectType( HitResult,
+                                                          PlayerViewPointLocation, LineTraceEnd, ObjectQueryParams, CollisionQueryParams );
+    if( Result )
+    {
+        UE_LOG( LogTemp, Warning, TEXT( "Hitted with %s" ), *HitResult.GetActor()->GetName() );
+    }
+    
+    DrawDebugLine( GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor::Red, false, 0.f, 0, 20.f );
+    
+    return HitResult;
+}
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
-
-	//UE_LOG( LogTemp, Warning, TEXT( "Viewport Position %s" ), *PlayerViewPointLocation.ToString() );
-	//UE_LOG( LogTemp, Warning, TEXT( "Viewport Rotation %s" ), *PlayerViewPointRotation.ToString() );
-
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-
-	DrawDebugLine( GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor::Red, false, 0.f, 0, 20.f );
-
-	FHitResult HitResult;
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery( ECollisionChannel::ECC_PhysicsBody );
-	
-	FCollisionQueryParams CollisionQueryParams(false);
-
-	bool Result = GetWorld()->LineTraceSingleByObjectType( HitResult,
-		PlayerViewPointLocation, LineTraceEnd, ObjectQueryParams, CollisionQueryParams );
-	if( Result )
-	{
-		UE_LOG( LogTemp, Warning, TEXT( "Hitted with %s" ), *HitResult.GetActor()->GetName() );
-	}
+    if(PhysicsHandle->GrabbedComponent)
+    {
+        FVector PlayerViewPointLocation;
+        FRotator PlayerViewPointRotation;
+        
+        GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+        
+        FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+        PhysicsHandle->SetTargetLocation(LineTraceEnd);
+    }
 }
 
