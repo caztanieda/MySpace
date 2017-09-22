@@ -45,6 +45,10 @@ private:
 
 	UPROPERTY( EditAnywhere )
 		AActor* PawnActorThatOpens;
-		
+    
+    UPROPERTY( EditAnywhere )
+        float TotalMassToOpen = 20.f;
+    
+    float GetTotalMassOfActorsOnPlate();
 	
 };
