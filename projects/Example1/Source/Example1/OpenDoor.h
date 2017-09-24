@@ -41,10 +41,7 @@ private:
 	float LastDoorOpenTime;
 
 	UPROPERTY( EditAnywhere )
-		ATriggerVolume* PressurePlate;
-
-	UPROPERTY( EditAnywhere )
-		AActor* PawnActorThatOpens;
+		ATriggerVolume* PressurePlate = nullptr;
     
     UPROPERTY( EditAnywhere )
         float TotalMassToOpen = 20.f;

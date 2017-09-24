@@ -21,10 +21,10 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	APawn* Pawn = PlayerController->GetPawn();
-	PawnActorThatOpens = Pawn;
-	
+	if( !PressurePlate )
+	{
+		UE_LOG( LogTemp, Error, TEXT( "Can't find pressure plate %s" ), *GetOwner()->GetName() );
+	}
 }
 
 void UOpenDoor::OpenDoor()
@@ -42,7 +42,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if( GetTotalMassOfActorsOnPlate() > TotalMassToOpen )//PressurePlate->IsOverlappingActor( PawnActorThatOpens ) )
+	if( GetTotalMassOfActorsOnPlate() > TotalMassToOpen )
 	{
 		OpenDoor();
 		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
@@ -59,11 +59,14 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate()
 {
     float TotalMass = 0.f;
     TArray<AActor*> OverlappingActors;
-    PressurePlate->GetOverlappingActors(OverlappingActors);
-    for( AActor* Actor : OverlappingActors)
-    {
-        UE_LOG( LogTemp, Warning, TEXT( "Overlapped with %s" ), *Actor->GetName() );
-        TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
-    }
+	if( PressurePlate )
+	{
+		PressurePlate->GetOverlappingActors( OverlappingActors );
+		for( AActor* Actor : OverlappingActors )
+		{
+			UE_LOG( LogTemp, Warning, TEXT( "Overlapped with %s" ), *Actor->GetName() );
+			TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		}
+	}
     return TotalMass;
 }
