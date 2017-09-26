@@ -12,4 +12,33 @@ ATank* ATankPlayerController::GetControlledTank() const
 void ATankPlayerController::BeginPlay()
 {
     Super::BeginPlay();
+    auto ControlledTank = GetControlledTank();
+    if(!ControlledTank)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerController not possesing a tank"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerController possessing: %s"), *ControlledTank->GetName());
+    }
+}
+
+void ATankPlayerController::Tick(float DeltaTime)
+{
+    Super::Tick( DeltaTime );
+    AimTowardsCrossHair();
+}
+
+void ATankPlayerController::AimTowardsCrossHair()
+{
+    FVector HitLocation;
+    if(GetSightRayHitLocation(HitLocation))
+    {
+        
+    }
+}
+
+bool ATankPlayerController::GetSightRayHitLocation(FVector& OUTHitLocation ) const
+{
+    return true;
 }

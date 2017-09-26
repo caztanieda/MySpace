@@ -4,21 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Tank.h"
-#include "GameFramework/PlayerController.h"
-#include "TankPlayerController.generated.h"
+#include "AIController.h"
+#include "TankAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TANKGAME_API ATankPlayerController : public APlayerController
+class TANKGAME_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 	
+    ATank* GetPlayerTank() const;
     ATank* GetControlledTank() const;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
-    
-    void AimTowardsCrossHair();
-    bool GetSightRayHitLocation(FVector& OUTHitLocation ) const;
+	
 };
