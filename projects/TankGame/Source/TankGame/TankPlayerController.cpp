@@ -2,6 +2,8 @@
 
 #include "TankPlayerController.h"
 
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "Runtime/Engine/Public/DrawDebugHelpers.h"
 
 
 ATank* ATankPlayerController::GetControlledTank() const
@@ -34,7 +36,7 @@ void ATankPlayerController::AimTowardsCrossHair()
     FVector HitLocation;
     if(GetSightRayHitLocation(HitLocation))
     {
-        
+		GetControlledTank()->AimAt( HitLocation );
     }
 }
 
@@ -49,11 +51,36 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& OUTHitLocation ) con
     FVector LookDirection;
     if(GetLookDirection(ScreenLocation, LookDirection))
     {
-        UE_LOG(LogTemp, Warning, TEXT("World direction %s"), *LookDirection.ToString());
+        //UE_LOG(LogTemp, Warning, TEXT("World direction %s"), *LookDirection.ToString());
+		GetHitVectorHitLocation(LookDirection, OUTHitLocation);
     }
     
     //Line-trace along that look direction, and see what we hit (up to max range)
+
+
     return true;
+}
+
+bool ATankPlayerController::GetHitVectorHitLocation( FVector LookDirection, FVector& HitLocation ) const
+{
+	FHitResult HitResult;
+	FVector CameraLocation = PlayerCameraManager->GetCameraLocation();
+	FVector EndLocation = CameraLocation + LookDirection * LineTraceRange;
+	bool result = GetWorld()->LineTraceSingleByChannel( HitResult, CameraLocation, EndLocation, ECollisionChannel::ECC_Visibility );
+	AActor* actor = HitResult.GetActor();
+	if( actor )
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "Traced actor %s" ), *actor->GetName() );
+		DrawDebugPoint(
+			GetWorld(),
+			HitResult.Location,
+			10.f,
+			FColor::Blue
+		);
+
+		HitLocation = HitResult.Location;
+	}
+	return result;
 }
 
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const

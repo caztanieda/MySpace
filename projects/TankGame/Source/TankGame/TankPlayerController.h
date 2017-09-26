@@ -22,7 +22,7 @@ class TANKGAME_API ATankPlayerController : public APlayerController
     void AimTowardsCrossHair();
     bool GetSightRayHitLocation(FVector& OUTHitLocation ) const;
     bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
-    
+	bool GetHitVectorHitLocation( FVector LookDirection, FVector& HitLocation ) const;
 private:
     
     UPROPERTY(EditAnywhere)
@@ -30,4 +30,7 @@ private:
     
     UPROPERTY(EditAnywhere)
         float CrosshairYLocation = 0.33333f;
+
+	UPROPERTY(EditAnywhere)
+		float LineTraceRange = 10000.f;
 };
