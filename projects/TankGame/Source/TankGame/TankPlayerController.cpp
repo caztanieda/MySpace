@@ -15,6 +15,7 @@ void ATankPlayerController::BeginPlay()
 {
     Super::BeginPlay();
     auto ControlledTank = GetControlledTank();
+	PrimaryActorTick.bCanEverTick = true;
     if(!ControlledTank)
     {
         UE_LOG(LogTemp, Warning, TEXT("PlayerController not possesing a tank"));
@@ -70,7 +71,7 @@ bool ATankPlayerController::GetHitVectorHitLocation( FVector LookDirection, FVec
 	AActor* actor = HitResult.GetActor();
 	if( actor )
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "Traced actor %s" ), *actor->GetName() );
+		//UE_LOG( LogTemp, Warning, TEXT( "Traced actor %s" ), *actor->GetName() );
 		DrawDebugPoint(
 			GetWorld(),
 			HitResult.Location,
