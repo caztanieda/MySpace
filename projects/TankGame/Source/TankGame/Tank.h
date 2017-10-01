@@ -9,6 +9,7 @@
 
 class UTankBarrelComponent;
 class UTankTurretComponent;
+class AProjectile;
 
 UCLASS()
 class TANKGAME_API ATank : public APawn
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY( EditAnywhere, Category = Firing )
 		float LaunchSpeed = 100000.f;
+
+	UPROPERTY( EditAnywhere, Category = Firing )
+		TSubclassOf<AProjectile> ProjectileBlueprint = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
