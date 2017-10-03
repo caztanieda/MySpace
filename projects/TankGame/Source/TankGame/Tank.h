@@ -29,13 +29,13 @@ public:
 	UFUNCTION( BlueprintCallable, Category = Action )
 		void Fire();
 
-	UPROPERTY( EditAnywhere, Category = Firing )
-		float LaunchSpeed = 10000.f;
+	UPROPERTY( EditDefaultsOnly, Category = Firing )
+		float LaunchSpeed = 4000.f;
 
-	UPROPERTY( EditAnywhere, Category = Firing )
+	UPROPERTY( EditDefaultsOnly, Category = Firing )
 		float FireRate = 2.5f;
 
-	UPROPERTY( EditAnywhere, Category = Firing )
+	UPROPERTY( EditDefaultsOnly, Category = Firing )
 		TSubclassOf<AProjectile> ProjectileBlueprint = nullptr;
 
 protected:

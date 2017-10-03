@@ -48,7 +48,10 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ATank::AimAt( FVector HitLocation )
 {
 	//UE_LOG( LogTemp, Warning, TEXT( "%s aiming %s" ), *GetName(), *HitLocation.ToString() );
-	TankAimingComponent->AimAt( HitLocation, LaunchSpeed);
+	if( TankAimingComponent )
+	{
+		TankAimingComponent->AimAt( HitLocation, LaunchSpeed );
+	}
 }
 
 void ATank::Fire()
@@ -64,10 +67,8 @@ void ATank::Fire()
 
 		FTimerManager& TimerManager = GetWorldTimerManager();
 		TankReadyToFire = false;
-		TimerManager.SetTimer( FireRateTimerHandle, [this, &TimerManager
-		] {
+		TimerManager.SetTimer( FireRateTimerHandle, [this] {
 				TankReadyToFire = true;
-				TimerManager.ClearTimer( FireRateTimerHandle );
 		}, FireRate, false );
 	}
 }
