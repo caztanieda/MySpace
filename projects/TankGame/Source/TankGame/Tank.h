@@ -33,6 +33,9 @@ public:
 		float LaunchSpeed = 10000.f;
 
 	UPROPERTY( EditAnywhere, Category = Firing )
+		float FireRate = 2.5f;
+
+	UPROPERTY( EditAnywhere, Category = Firing )
 		TSubclassOf<AProjectile> ProjectileBlueprint = nullptr;
 
 protected:
@@ -40,6 +43,8 @@ protected:
 	virtual void BeginPlay() override;
 	UTankAimingComponent* TankAimingComponent = nullptr;
 	UTankBarrelComponent* Barrel = nullptr;
+	bool TankReadyToFire = true;
+	FTimerHandle FireRateTimerHandle;
 
 public:	
 	// Called every frame

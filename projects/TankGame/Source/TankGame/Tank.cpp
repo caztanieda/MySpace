@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "TankBarrelComponent.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values
 ATank::ATank()
@@ -52,10 +53,21 @@ void ATank::AimAt( FVector HitLocation )
 
 void ATank::Fire()
 {
-	UE_LOG( LogTemp, Warning, TEXT( "Fire" ) );
-	UWorld* World = GetWorld();
-	FVector Location = Barrel->GetSocketLocation( FName( "Spawner" ) );
-	FRotator Rotation = Barrel->GetSocketRotation( FName( "Spawner" ) );
-	auto Projectile = World->SpawnActor<AProjectile>( ProjectileBlueprint, Location, Rotation );
-	Projectile->LaunchProjectile( LaunchSpeed );
+	if( TankReadyToFire )
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "Fire" ) );
+		UWorld* World = GetWorld();
+		FVector Location = Barrel->GetSocketLocation( FName( "Spawner" ) );
+		FRotator Rotation = Barrel->GetSocketRotation( FName( "Spawner" ) );
+		auto Projectile = World->SpawnActor<AProjectile>( ProjectileBlueprint, Location, Rotation );
+		Projectile->LaunchProjectile( LaunchSpeed );
+
+		FTimerManager& TimerManager = GetWorldTimerManager();
+		TankReadyToFire = false;
+		TimerManager.SetTimer( FireRateTimerHandle, [this, &TimerManager
+		] {
+				TankReadyToFire = true;
+				TimerManager.ClearTimer( FireRateTimerHandle );
+		}, FireRate, false );
+	}
 }
