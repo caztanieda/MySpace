@@ -30,7 +30,7 @@ public:
 		void Fire();
 
 	UPROPERTY( EditAnywhere, Category = Firing )
-		float LaunchSpeed = 100000.f;
+		float LaunchSpeed = 10000.f;
 
 	UPROPERTY( EditAnywhere, Category = Firing )
 		TSubclassOf<AProjectile> ProjectileBlueprint = nullptr;
@@ -39,6 +39,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UTankAimingComponent* TankAimingComponent = nullptr;
+	UTankBarrelComponent* Barrel = nullptr;
 
 public:	
 	// Called every frame
