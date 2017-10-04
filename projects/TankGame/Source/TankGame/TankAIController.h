@@ -14,6 +14,8 @@ UCLASS()
 class TANKGAME_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
+
+	float AcceptanceRadius = 1000000.f;
 	
     ATank* GetPlayerTank() const;
     ATank* GetControlledTank() const;

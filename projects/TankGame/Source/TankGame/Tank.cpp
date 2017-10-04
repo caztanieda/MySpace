@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "TankBarrelComponent.h"
+#include "TankMovementComponent.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values

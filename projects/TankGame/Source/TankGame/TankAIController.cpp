@@ -45,6 +45,13 @@ void ATankAIController::Tick(float DeltaTime)
 {
     Super::Tick( DeltaTime );
 	FVector PlayerTankLocation = GetPlayerTank()->GetActorLocation();
-	GetControlledTank()->AimAt( PlayerTankLocation );
-	GetControlledTank()->Fire();
+	ATank* ControlledTank = GetControlledTank();
+
+	if( ControlledTank )
+	{
+		ControlledTank->AimAt( PlayerTankLocation );
+		MoveToActor( GetPlayerTank());
+		ControlledTank->Fire();
+	}
+
 }

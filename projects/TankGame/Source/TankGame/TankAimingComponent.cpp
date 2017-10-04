@@ -60,7 +60,7 @@ void UTankAimingComponent::AimAt( FVector HitLocation, float LaunchSpeed )
 	}
 	else
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "Have no aimSolution" ) );
+		//UE_LOG( LogTemp, Warning, TEXT( "Have no aimSolution" ) );
 	}
 }
 
