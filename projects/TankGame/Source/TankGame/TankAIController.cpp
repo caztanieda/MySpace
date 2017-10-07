@@ -50,8 +50,15 @@ void ATankAIController::Tick(float DeltaTime)
 	if( ControlledTank )
 	{
 		ControlledTank->AimAt( PlayerTankLocation );
-		MoveToActor( GetPlayerTank());
-		ControlledTank->Fire();
+		//MoveToActor( GetPlayerTank());
+		MoveToLocation( PlayerTankLocation, AcceptanceRadius );
+		//ControlledTank->Fire();
 	}
 
+}
+
+void ATankAIController::OnMoveCompleted( FAIRequestID RequestID, const FPathFollowingResult& Result )
+{
+	Super::OnMoveCompleted( RequestID, Result );
+	UE_LOG(LogTemp, Warning, TEXT("MoveResult %s"), *Result.ToString());
 }

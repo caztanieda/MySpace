@@ -15,11 +15,13 @@ class TANKGAME_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 
-	float AcceptanceRadius = 1000000.f;
+	float AcceptanceRadius = 5000.f;
 	
     ATank* GetPlayerTank() const;
     ATank* GetControlledTank() const;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+public:
+	virtual void OnMoveCompleted( FAIRequestID RequestID, const FPathFollowingResult& Result ) override;
 	
 };
