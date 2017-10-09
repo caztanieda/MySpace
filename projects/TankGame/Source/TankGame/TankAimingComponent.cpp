@@ -17,19 +17,15 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-
-void UTankAimingComponent::SetBarrelReference( UTankBarrelComponent * BarrelToSet )
+void UTankAimingComponent::Initialize( UTankTurretComponent * TurretToSet, UTankBarrelComponent * BarrelToSet )
 {
 	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference( UTankTurretComponent * TurretToSet )
-{
 	Turret = TurretToSet;
 }
 
 void UTankAimingComponent::AimAt( FVector HitLocation, float LaunchSpeed )
 {
+	if( !ensure( Barrel ) ) return;
 	FVector SpawnerLocation = Barrel->GetSocketLocation( "Spawner" );
 	//UE_LOG( LogTemp, Warning, TEXT("SpawnerLocation %s"), *SpawnerLocation.ToString() );
 	//DrawDebugPoint(

@@ -18,7 +18,9 @@ class TANKGAME_API ATankAIController : public AAIController
 	float AcceptanceRadius = 5000.f;
 	
     ATank* GetPlayerTank() const;
+
     ATank* GetControlledTank() const;
+
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 public:

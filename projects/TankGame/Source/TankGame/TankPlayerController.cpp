@@ -5,6 +5,8 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
 
+#include "Tank.h"
+#include "TankAimingComponent.h"
 
 ATank* ATankPlayerController::GetControlledTank() const
 {
@@ -24,6 +26,9 @@ void ATankPlayerController::BeginPlay()
     {
         UE_LOG(LogTemp, Warning, TEXT("PlayerController possessing: %s"), *ControlledTank->GetName());
     }
+
+	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
+	FoundTankAimingComponent( AimingComponent );
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -37,7 +42,11 @@ void ATankPlayerController::AimTowardsCrossHair()
     FVector HitLocation;
     if(GetSightRayHitLocation(HitLocation))
     {
-		GetControlledTank()->AimAt( HitLocation );
+		ATank* Tank = GetControlledTank();
+		if( Tank )
+		{
+			Tank->AimAt( HitLocation );
+		}
     }
 }
 
@@ -68,8 +77,8 @@ bool ATankPlayerController::GetHitVectorHitLocation( FVector LookDirection, FVec
 	FVector CameraLocation = PlayerCameraManager->GetCameraLocation();
 	FVector EndLocation = CameraLocation + LookDirection * LineTraceRange;
 	bool result = GetWorld()->LineTraceSingleByChannel( HitResult, CameraLocation, EndLocation, ECollisionChannel::ECC_Visibility );
-	AActor* actor = HitResult.GetActor();
-	if( actor )
+	AActor* Actor = HitResult.GetActor();
+	if( Actor )
 	{
 		//UE_LOG( LogTemp, Warning, TEXT( "Traced actor %s" ), *actor->GetName() );
 		DrawDebugPoint(
@@ -78,6 +87,11 @@ bool ATankPlayerController::GetHitVectorHitLocation( FVector LookDirection, FVec
 			10.f,
 			FColor::Blue
 		);
+
+		if( Cast<ATank>( Actor ) )
+		{
+			
+		}
 
 		HitLocation = HitResult.Location;
 	}
