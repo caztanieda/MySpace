@@ -4,8 +4,10 @@
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 #include "TankBarrelComponent.h"
 #include "TankTurretComponent.h"
+#include "Projectile.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -23,7 +25,7 @@ void UTankAimingComponent::Initialize( UTankTurretComponent * TurretToSet, UTank
 	Turret = TurretToSet;
 }
 
-void UTankAimingComponent::AimAt( FVector HitLocation, float LaunchSpeed )
+void UTankAimingComponent::AimAt( FVector HitLocation )
 {
 	if( !ensure( Barrel ) ) return;
 	FVector SpawnerLocation = Barrel->GetSocketLocation( "Spawner" );
@@ -77,4 +79,27 @@ void UTankAimingComponent::MoveTurretTowards( FVector AimDirection )
 	//UE_LOG( LogTemp, Warning, TEXT( "Rotate turret %f" ), Turret->RelativeRotation.Yaw + DeltaRotator.Yaw );
 
 	Turret->Rotate( DeltaRotator.Yaw );
+}
+
+
+void UTankAimingComponent::Fire()
+{
+	if( TankReadyToFire )
+	{
+	    UE_LOG( LogTemp, Warning, TEXT( "Fire" ) );
+	    UWorld* World = GetWorld();
+	    if( Barrel )
+	    {
+	        FVector Location = Barrel->GetSocketLocation( FName( "Spawner" ) );
+	        FRotator Rotation = Barrel->GetSocketRotation( FName( "Spawner" ) );
+	        auto Projectile = World->SpawnActor<AProjectile>( ProjectileBlueprint, Location, Rotation );
+	        Projectile->LaunchProjectile( LaunchSpeed );
+
+	        FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	        TankReadyToFire = false;
+	        TimerManager.SetTimer( FireRateTimerHandle, [this] {
+	            TankReadyToFire = true;
+	        }, FireRate, false );
+	    }
+	}
 }

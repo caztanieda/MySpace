@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAIController.h"
-
+#include "TankAimingComponent.h"
 
 
 
@@ -45,16 +45,20 @@ void ATankAIController::Tick(float DeltaTime)
 {
     Super::Tick( DeltaTime );
 	FVector PlayerTankLocation = GetPlayerTank()->GetActorLocation();
-	ATank* ControlledTank = GetControlledTank();
 
-	if( ControlledTank )
+	ATank* Tank = GetControlledTank();
+	if( ensure( Tank ) )
 	{
-		ControlledTank->AimAt( PlayerTankLocation );
-		//MoveToActor( GetPlayerTank());
-		MoveToLocation( PlayerTankLocation, AcceptanceRadius );
-		//ControlledTank->Fire();
-	}
+		auto TankAimingComponent = Tank->FindComponentByClass<UTankAimingComponent>();
 
+		if( ensure( TankAimingComponent ) )
+		{
+			TankAimingComponent->AimAt( PlayerTankLocation );
+			TankAimingComponent->Fire();
+		}
+
+		MoveToLocation( PlayerTankLocation, AcceptanceRadius );
+	}
 }
 
 void ATankAIController::OnMoveCompleted( FAIRequestID RequestID, const FPathFollowingResult& Result )
