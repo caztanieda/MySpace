@@ -35,6 +35,6 @@ void UTankMovementComponent::RequestDirectMove( const FVector& MoveVelocity, boo
 	IntendMoveForward( Cosin / 2.f );
 
 	float TurnThrust = FVector::CrossProduct( AIMoveIntention, Forward ).Z;
-	IntendTurnRight( -TurnThrust * 2.f );
+	IntendTurnRight( -TurnThrust );
 
 }
