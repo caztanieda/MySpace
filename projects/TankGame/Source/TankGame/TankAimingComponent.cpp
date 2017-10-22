@@ -27,7 +27,7 @@ void UTankAimingComponent::TickComponent( float DeltaTime, enum ELevelTick TickT
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	if( FiringStatus != EFiringStatus::Reloading )
+	if( FiringStatus != EFiringStatus::Reloading && FiringStatus != EFiringStatus::OutOfAmmo )
 	{
 		FiringStatus = IsBarrelMoving() ? EFiringStatus::Aiming : EFiringStatus::Locked;
 	}
@@ -86,19 +86,26 @@ void UTankAimingComponent::MoveBarrelTowards()
 
 void UTankAimingComponent::MoveTurretTowards()
 {
+	if( !Turret ) return;
 	auto TurretAsRotation = Turret->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - TurretAsRotation;
-	
 	//UE_LOG( LogTemp, Warning, TEXT( "Rotate turret %f" ), Turret->RelativeRotation.Yaw + DeltaRotator.Yaw );
-
-	Turret->Rotate( DeltaRotator.Yaw );
+	
+	if( DeltaRotator.Yaw < 180 )
+	{
+		Turret->Rotate( DeltaRotator.Yaw );
+	}
+	else
+	{
+		Turret->Rotate( -DeltaRotator.Yaw );
+	}	
 }
 
 
 void UTankAimingComponent::Fire()
 {
-	if( TankReadyToFire )
+	if( TankReadyToFire && Charges > 0)
 	{
 	    UE_LOG( LogTemp, Warning, TEXT( "Fire" ) );
 	    UWorld* World = GetWorld();
@@ -108,10 +115,10 @@ void UTankAimingComponent::Fire()
 	        FRotator Rotation = Barrel->GetSocketRotation( FName( "Spawner" ) );
 	        auto Projectile = World->SpawnActor<AProjectile>( ProjectileBlueprint, Location, Rotation );
 	        Projectile->LaunchProjectile( LaunchSpeed );
-
+			--Charges;
 	        FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	        TankReadyToFire = false;
-			FiringStatus = EFiringStatus::Reloading;
+			FiringStatus = Charges == 0 ? EFiringStatus::OutOfAmmo : EFiringStatus::Reloading;
 	        TimerManager.SetTimer( FireRateTimerHandle, [this] {
 	            TankReadyToFire = true;
 				FiringStatus = IsBarrelMoving() ? EFiringStatus::Aiming : EFiringStatus::Locked;

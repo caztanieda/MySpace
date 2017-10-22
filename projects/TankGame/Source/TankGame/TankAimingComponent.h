@@ -14,6 +14,7 @@ enum class EFiringStatus: uint8
 {
 	Reloading,
 	Aiming,
+	OutOfAmmo,
 	Locked
 };
 
@@ -51,6 +52,12 @@ public:
 	 
 	UPROPERTY( EditDefaultsOnly, Category = Firing )
 		TSubclassOf<AProjectile> ProjectileBlueprint = nullptr;
+
+	UPROPERTY( EditAnywhere, Category = Firing )
+		int32 Charges = 5;
+
+	UFUNCTION( BlueprintCallable, Category = "Firing" )
+		int32 GetCharges() const { return Charges;  }
 
 public:
 

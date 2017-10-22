@@ -15,6 +15,8 @@ class TANKGAME_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Moving")
 	float AcceptanceRadius = 5000.f;
 	
     ATank* GetPlayerTank() const;

@@ -44,20 +44,25 @@ void ATankAIController::BeginPlay()
 void ATankAIController::Tick(float DeltaTime)
 {
     Super::Tick( DeltaTime );
-	FVector PlayerTankLocation = GetPlayerTank()->GetActorLocation();
 
-	ATank* Tank = GetControlledTank();
-	if( ensure( Tank ) )
+	auto PlayerTank = GetPlayerTank();
+	if( PlayerTank )
 	{
-		auto TankAimingComponent = Tank->FindComponentByClass<UTankAimingComponent>();
+		FVector PlayerTankLocation = PlayerTank->GetActorLocation();
 
-		if( ensure( TankAimingComponent ) )
+		ATank* Tank = GetControlledTank();
+		if( Tank )
 		{
-			TankAimingComponent->AimAt( PlayerTankLocation );
-		//	TankAimingComponent->Fire();
-		}
+			auto TankAimingComponent = Tank->FindComponentByClass<UTankAimingComponent>();
 
-		MoveToLocation( PlayerTankLocation, AcceptanceRadius );
+			if( ensure( TankAimingComponent ) )
+			{
+				TankAimingComponent->AimAt( PlayerTankLocation );
+				//	TankAimingComponent->Fire();
+			}
+
+			MoveToLocation( PlayerTankLocation, AcceptanceRadius );
+		}
 	}
 }
 
